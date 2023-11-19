@@ -10,10 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_17_222253) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_19_043608) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
+
+  create_table "availabilities", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.datetime "start_time", null: false
+    t.datetime "end_time", null: false
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_availabilities_on_user_id"
+  end
+
+  create_table "guests", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "availability_id", null: false
+    t.string "status", default: "pending"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["availability_id"], name: "index_guests_on_availability_id"
+    t.index ["user_id", "availability_id"], name: "index_guests_on_user_id_and_availability_id", unique: true
+    t.index ["user_id"], name: "index_guests_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -35,4 +56,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_17_222253) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "availabilities", "users"
+  add_foreign_key "guests", "availabilities"
+  add_foreign_key "guests", "users"
 end

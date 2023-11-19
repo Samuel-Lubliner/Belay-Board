@@ -30,5 +30,9 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  validates :username, uniqueness: { case_sensitive: false }  
+  validates :username, uniqueness: { case_sensitive: false }, presence: true
+
+  has_many :hosting, class_name: 'Availability', foreign_key: 'user_id', dependent: :destroy
+  has_many :guests, dependent: :destroy
+  has_many :guesting, through: :guests, source: :availability
 end

@@ -7,35 +7,21 @@
 ## Add Users with Devise
 `rails generate devise User username:citext is_employee:boolean bio:text phone:string profile_picture:string qualifications:text interests:text`
 
-### add unique index, null constraints, and default values
-```ruby
-class DeviseCreateUsers < ActiveRecord::Migration[7.0]
-  def change
-    create_table :users do |t|
-      ## Database authenticatable
-      t.string :email,              null: false, default: ""
-      t.string :encrypted_password, null: false, default: ""
+Add unique index, null constraints, and default values
 
-      # ...
+`rails db:migrate`
 
-      t.citext :username, null: false, unique: true
-      t.boolean :is_employee, default: false, null: false
-      t.text :bio
-      t.string :phone
-      t.string :profile_picture
-      t.text :qualifications
-      t.text :interests
+## Add Availabilities
+`rails g scaffold availability user:references start_time:datetime end_time:datetime description:string`
 
-      t.timestamps null: false
-    end
+Update migration file and models
 
-    add_index :users, :email,                unique: true
-    add_index :users, :reset_password_token, unique: true
-    add_index :users, :username, unique: true
+# Add Guests
+`rails g model Guest user:references availability:references status:string`
 
+Update migration file and models
 
-    # add_index :users, :confirmation_token,   unique: true
-    # add_index :users, :unlock_token,         unique: true
-  end
-end
-```
+Guest cant be added to the same availability more than once
+`add_index :guests, [:user_id, :availability_id], unique: true`
+
+`rails db:migrate`
